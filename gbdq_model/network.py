@@ -19,19 +19,19 @@ class GraphBranchingQNetwork(nn.Module):
         self.state = state
         self.in_size = state * state
 
-        self.conv_model1 = nn.Sequential(nn.Linear(2 * 2, 64),
+
+        self.conv_model1 = nn.Sequential(nn.Linear(2 * 2, 256),
                                          nn.ReLU(),
-                                         nn.Linear(64, state),
+                                         nn.Linear(256, state),
+                                         )
+        self.conv_model2 = nn.Sequential(nn.Linear(2 * state, 256),
+                                         nn.ReLU(),
+                                         nn.Linear(256, state),
                                          )
 
-        self.conv_model2 = nn.Sequential(nn.Linear(2 * state, 64),
+        self.conv_model3 = nn.Sequential(nn.Linear(2 * state, 256),
                                          nn.ReLU(),
-                                         nn.Linear(64, state),
-                                         )
-
-        self.conv_model3 = nn.Sequential(nn.Linear(2 * state, 64),
-                                         nn.ReLU(),
-                                         nn.Linear(64, state),
+                                         nn.Linear(256, state),
                                          )
 
         self.gconv1 = EdgeConv(self.conv_model1, aggr="add")
@@ -40,13 +40,13 @@ class GraphBranchingQNetwork(nn.Module):
         # self.conv1 = nn.Conv1d(state, state, 3, padding=1, stride=1)
         # self.conv2 = nn.Conv1d(state, state, 3, padding=1, stride=1)
 
-        self.model = nn.Sequential(nn.Linear(self.in_size, 512),
+        self.model = nn.Sequential(nn.Linear(self.in_size, 1024),
                                    nn.ReLU(),
-                                   nn.Linear(512, 512),
+                                   nn.Linear(1024, 512),
                                    nn.ReLU(),
-                                   nn.Linear(512, 512),
+                                   nn.Linear(512, 256),
                                    nn.ReLU(),
-                                   nn.Linear(512, 512),
+                                   nn.Linear(256, 256),
                                    nn.ReLU(),
                                    )
 
@@ -55,7 +55,7 @@ class GraphBranchingQNetwork(nn.Module):
         self.bn2 = nn.BatchNorm1d(state)
         self.bn3 = nn.BatchNorm1d(state)
 
-        self.value_head = nn.Sequential(nn.Linear(512, 512),
+        self.value_head = nn.Sequential(nn.Linear(256, 512),
                                         nn.ReLU(),
                                         nn.Linear(512, 512),
                                         nn.ReLU(),
@@ -63,7 +63,7 @@ class GraphBranchingQNetwork(nn.Module):
                                         )
 
         self.adv_heads = nn.ModuleList([nn.Sequential(
-            nn.Linear(512, 512),
+            nn.Linear(256, 512),
             nn.ReLU(),
             nn.Linear(512, 512),
             nn.ReLU(),

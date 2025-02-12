@@ -45,7 +45,7 @@ class AgentConfig:
                  gamma=9.,
                  reward_discount_rate=0.9,
                  learning_rate=1e-4,
-                 bins=3,
+                 bins=11,
                  target_net_update_freq=1000,
                  memory_size=10**5,
                  batch_size=512,
