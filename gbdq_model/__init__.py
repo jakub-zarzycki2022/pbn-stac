@@ -85,11 +85,6 @@ class GBDQ(nn.Module):
                     # action_len = random.randint(1, self.config.bins)
                     action_len = self.config.bins
 
-                    # action = [random.choice(range(len(state))) for _ in range(action_len)]
-                    # action = [
-                    #     1 + random.choice(list(set([x for x in range(0, len(state))]) -
-                    #                            set(self.env.forbidden_actions))) for _ in range(action_len)]
-
                     diff_list = [x for x in white_list if state[x] != target[x]]
 
                 if len(diff_list) == 0:
@@ -99,7 +94,12 @@ class GBDQ(nn.Module):
 
                     print('------------------------')
                     print(state)
-                action = [1 + random.choice(diff_list) for _ in range(action_len)]
+
+                if len(diff_list) < action_len:
+                    action = [1 + x for x in diff_list]
+                    action += [0] * (action_len - len(diff_list))
+                else:
+                    action = [1 + x for x in random.sample(diff_list, action_len)]
 
                 action = torch.tensor(action, device=self.config.device)
             else:
@@ -110,8 +110,8 @@ class GBDQ(nn.Module):
 
                 out = self.q(x, self.edge_index).squeeze(0)
 
-                for i in self.env.forbidden_actions:
-                    out[:, i+1] = 0
+                # for i in self.env.forbidden_actions:
+                #     out[:, i+1] = 0
 
                 action = torch.argmax(out, dim=1).to(self.config.device)
 
@@ -166,7 +166,7 @@ class GBDQ(nn.Module):
         if self.time_steps > self.start_predicting:
             if self.time_steps % 20_000 == 0:
                 if self.missed_paths > 35:
-                    self.EPSILON = 0.1 + self.EPSILON_DECREMENT
+                    self.EPSILON = max(self.EPSILON, 0.1 + self.EPSILON_DECREMENT)
 
             self.EPSILON = max(self.MIN_EPSILON, self.EPSILON - self.EPSILON_DECREMENT)
 

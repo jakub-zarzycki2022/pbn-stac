@@ -92,6 +92,7 @@ if args.assa_file is not None:
                         continue
 
                     if line[0] == "end":
+                        print('last: ', target_gene, target_fun)
                         break
 
                     target_gene = line[0].split("=")[0]
@@ -113,8 +114,8 @@ if args.assa_file is not None:
                     target_fun = target_fun.replace("~", " not ")
                     logic_funcs[target_gene].append((target_fun, 1.0))
 
-    print(list(logic_funcs.keys()))
-    print(list(logic_funcs.values()))
+    # print(list(logic_funcs.keys()))
+    # print(list(logic_funcs.values()))
 
     # for i in range(len(genes)):
     #     print(list(logic_funcs.keys())[i], list(logic_funcs.values())[i])
