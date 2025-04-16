@@ -80,27 +80,26 @@ class GBDQ(nn.Module):
                 diff_list = []
                 white_list = list(set([x for x in range(0, len(state))]) - set(self.env.forbidden_actions))
 
-                while len(diff_list) == 0:
-                    target = random.choice(self.env.target_attractors)
-                    # action_len = random.randint(1, self.config.bins)
-                    action_len = self.config.bins
-
-                    diff_list = [x for x in white_list if state[x] != target[x]]
-
-                if len(diff_list) == 0:
-                    print(self.env.in_target(state))
-                    for a in self.env.target_attractors:
-                        print(a)
-
-                    print('------------------------')
-                    print(state)
-
-                if len(diff_list) < action_len:
-                    action = [1 + x for x in diff_list]
-                    action += [0] * (action_len - len(diff_list))
-                else:
-                    action = [1 + x for x in random.sample(diff_list, action_len)]
-
+                # while len(diff_list) == 0:
+                #     target = random.choice(self.env.target_attractors)
+                #     # action_len = random.randint(1, self.config.bins)
+                #     action_len = self.config.bins
+                #
+                #     diff_list = [x for x in white_list if state[x] != target[x]]
+                #
+                # if len(diff_list) == 0:
+                #     print(self.env.in_target(state))
+                #     for a in self.env.target_attractors:
+                #         print(a)
+                #
+                #     print('------------------------')
+                #     print(state)
+                #
+                # if len(diff_list) < action_len:
+                #     action = [1 + x for x in diff_list]
+                #     action += [0] * (action_len - len(diff_list))
+                # else:
+                action = [1 + x for x in random.sample(white_list, self.config.bins)]
                 action = torch.tensor(action, device=self.config.device)
             else:
                 # s = np.stack((state, target))

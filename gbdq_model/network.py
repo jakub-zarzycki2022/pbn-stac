@@ -24,6 +24,7 @@ class GraphBranchingQNetwork(nn.Module):
                                          nn.ReLU(),
                                          nn.Linear(256, state),
                                          )
+
         self.conv_model2 = nn.Sequential(nn.Linear(2 * state, 256),
                                          nn.ReLU(),
                                          nn.Linear(256, state),

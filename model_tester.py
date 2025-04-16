@@ -535,7 +535,7 @@ print(type(env.env.env))
 
 env.reset()
 
-DEVICE = 'cpu'
+# DEVICE = 'cpu'
 
 config = AgentConfig()
 model = GBDQ(N, N + 1, config, env)
@@ -586,16 +586,29 @@ try:
 except FileNotFoundError:
     runs = args.runs
 
+# attractors = all_attractors
+# all_attractors = []
+#
+# for attractor in attractors:
+#     if attractor[17] == 0 and attractor[21] == 1:
+#         all_attractors.append(attractor)
+#
+# for a in all_attractors:
+#     print(a, a[3] == 1)
 
 gene_stats = []
-genes_used = set()
+genes_used = defaultdict(int)
+total = 0
+count = 0
+print("testing on ", len(all_attractors), " attractros")
 for i in range(runs):
     print("testing round ", i)
     id = -1
 
     for attractor_id in range(args.attractors):
-        gene_stats.append(genes_used.copy())
-        genes_used = set()
+        gens_used_tmp = defaultdict(int)
+        gu = []
+
         # print(f"processing initial_state, target_state = {attractor_id}, {target_id}")
         model.EPSILON = 0.
         id += 1
@@ -609,11 +622,13 @@ for i in range(runs):
         state = [0 if i == '*' else i for i in list(state)]
         _ = env.reset()
         env.graph.setState(state)
+        total += count
         count = 0
 
         # env.setTarget(target)
 
         while not env.in_target(state):
+            gu_tmp = []
             count += 1
 
             # policy, value = model.predict(state, target_state)
@@ -621,7 +636,12 @@ for i in range(runs):
             # action = [np.random.choice(range(N+1), p=policy)]
             action = model.predict(state, state)
             al = action.tolist()
-            genes_used = genes_used.union(al)
+
+            for gen in al:
+                gens_used_tmp[gen-1] += 1
+                gu_tmp.append(gen-1)
+
+            gu.append(gu_tmp)
 
             _ = env.step(action)
             state = env.render()
@@ -632,31 +652,25 @@ for i in range(runs):
                 # print(f"final state was 		     {tuple(state)}")
                 print(id)
                 failed += 1
-                failed_pairs.append((initial_state))
-                lens[id].append(-1)
-                result_matrix[attractor_id] += 101
-                data[101] += 1
                 # raise ValueError
                 break
         else:
+            # for g in gens_used_tmp:
+            #     genes_used[g] += gens_used_tmp[g]
+            # print(f"for initial state {attractor_id} got (total of {count} steps), on: \n"
+            #       f"{gu}")
             print(f"for initial state {attractor_id} got (total of {count} steps), on: \n"
-                  f"{len(genes_used)}, {[env.graph.nodes[i].name for i in genes_used]}")
-            # raise ValueError()
-            for a in actions:
-                # print(a)
-                pass
-            result_matrix[attractor_id] += count
-            data[int(count)] += 1
-            if count > 0:
-                lens[id].append(count)
+                  f"{[[env.graph.nodes[a].name for a in action] for action in gu]}")
 
-result_matrix /= args.runs
+
+# result_matrix /= args.runs
 # print(result_matrix)
 
+print('got total steps ', total, 'in ', args.attractors * args.runs, 'runs')
+print('average ', total / (args.attractors * args.runs))
 gene_stats = gene_stats[1:]
-print("gene stats: ")
-for s in gene_stats:
-    print(len(s), [env.graph.nodes[i].name for i in s])
+print("gene used: ", {env.graph.nodes[i].name: genes_used[i] for i in genes_used})
+
 
 exit()
 

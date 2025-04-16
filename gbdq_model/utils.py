@@ -40,13 +40,13 @@ class AgentConfig:
 
     def __init__(self,
                  epsilon_start=1.,
-                 epsilon_final=0.1,
+                 epsilon_final=0.2,
                  epsilon_decay=20000,
                  reward_discount_rate=.95,
-                 learning_rate=0.001,
+                 learning_rate=0.0001,
                  bins=5,
                  target_net_update_freq=7_000,
-                 memory_size=10**7,
+                 memory_size=10**5,
                  batch_size=256,
                  learning_starts=278,
                  time_steps=10_000_000):
