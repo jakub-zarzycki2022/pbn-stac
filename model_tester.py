@@ -542,24 +542,6 @@ model = GBDQ(N, N + 1, config, env)
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 model.EPSILON = 0
 
-action = 0
-state, _ = env.reset()
-
-# policy, value = model.predict(state, target);
-# policy = policy.numpy()
-# action = [np.random.choice(range(N+1), p=policy)]
-
-action = model.predict(state, state)
-print(action)
-state, *_ = env.step(action)
-print(state)
-
-all_attractors = env.all_attractors
-
-lens = []
-failed = 0
-total = 0
-
 failed_pairs = []
 
 all_attractors = env.divided_attractors
@@ -586,20 +568,11 @@ try:
 except FileNotFoundError:
     runs = args.runs
 
-# attractors = all_attractors
-# all_attractors = []
-#
-# for attractor in attractors:
-#     if attractor[17] == 0 and attractor[21] == 1:
-#         all_attractors.append(attractor)
-#
-# for a in all_attractors:
-#     print(a, a[3] == 1)
-
 gene_stats = []
 genes_used = defaultdict(int)
 total = 0
 count = 0
+
 print("testing on ", len(all_attractors), " attractros")
 for i in range(runs):
     print("testing round ", i)
@@ -661,6 +634,8 @@ for i in range(runs):
             #       f"{gu}")
             print(f"for initial state {attractor_id} got (total of {count} steps), on: \n"
                   f"{[[env.graph.nodes[a].name for a in action] for action in gu]}")
+            for g in gu[0]:
+                genes_used[g] += 1
 
 
 # result_matrix /= args.runs
@@ -669,8 +644,19 @@ for i in range(runs):
 print('got total steps ', total, 'in ', args.attractors * args.runs, 'runs')
 print('average ', total / (args.attractors * args.runs))
 gene_stats = gene_stats[1:]
-print("gene used: ", {env.graph.nodes[i].name: genes_used[i] for i in genes_used})
+print("gene used: ", {env.graph.nodes[i].name: genes_used[i] for i in genes_used if i not in env.forbidden_actions})
 
+s = sum(genes_used.values())
+in_edges = defaultdict(int)
+out_edges = defaultdict(int)
+
+for i, node in enumerate(env.graph.nodes):
+    for p in node.predictors[0]:
+        out_edges[p] += 1
+    in_edges[i] = len(node.predictors[0])
+
+for g in genes_used:
+    print(env.graph.nodes[g].name, ", ", genes_used[g] * 100 / s, "%, ", in_edges[g], ", ", out_edges[g])
 
 exit()
 

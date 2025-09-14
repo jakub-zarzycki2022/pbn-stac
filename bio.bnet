@@ -1,0 +1,60 @@
+targets, factors
+creb1, creb1
+FGF8, FGF8
+ID3, ID3
+notch, notch
+SHH, SHH
+WNT, WNT
+WNT3a, WNT3a
+wwtr1, wwtr1
+miR1, Myf5
+miR206, MyoG | Myf5 | MyoD1 | Mef2c
+Mef2a, twist
+Mef2c, ~Mrf4 & twist
+meox1, Pax3
+mir133a1, MyoG
+msg1, WNT3a
+msgn1, T
+Mrf4, MyoG | Mef2c | Mef2a
+Myf5, Pax7 | Pax3 | WNT | SHH
+myh1, Mef2a
+myh10, Mef2a
+myh2, Mef2a
+MyoD1, (~ID3 | ~notch | ~Pax7) & (FGF8 | Mef2c | Mef2a | SHH | WNT | Pax3 | twist | pitx2)
+MyoG, ~notch & (MyoG | MyoD1 | twist)
+Pax3, (~miR1 & ~miR206) & (meox1 | creb1 | wwtr1)
+Pax7, (~miR1 & ~MyoG & ~miR206) & (T | notch)
+pitx2, Pax3
+T, WNT3a | FGF8
+twist, WNT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
