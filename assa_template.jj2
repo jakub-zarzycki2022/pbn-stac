@@ -1,0 +1,15 @@
+type=synchronous
+n={{ n }}
+perturbation=0.000
+nodeNames
+{% for key in log_funcs -%}
+{{ key }}
+{%  endfor -%}
+endNodeNames
+{% for key in log_funcs -%}
+node {{ key }}
+1.0: {{ log_funcs[key] }}
+endNode
+{% endfor -%}
+npNode
+endNpNode
