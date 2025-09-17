@@ -15,8 +15,9 @@ if t == 'bnet':
     f = convert(f)
 
 pbn = bang.load_from_file(f, "assa")
-pbn._n_parallel = max(77, pbn.n_nodes ** 4)
+pbn._n_parallel = min(max(77, pbn.n_nodes * 10), 2 ** pbn.n_nodes - 1)
 pbn.device = "cpu"
 
+print("gogogog")
 attractors = pbn.monte_carlo_detect_attractors(trajectory_length=1100, attractor_length=1300)
 print(len(attractors))
